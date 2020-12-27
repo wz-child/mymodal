@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="vue.js"></script>
+	<style type="text/css">
+		.box1{
+			width: 200px;
+			height: 70px;
+			background-color: aqua;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		div{
+			width: 60px;
+		}
+		.select{
+			display: flex;
+		}
+		.box2{
+			width: 200px;
+			height: 70px;
+			background-color: darkslateblue;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.box3{
+			width: 200px;
+			height: 70px;
+			background-color:greenyellow;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+	</style>
+</head>
+<body>
+	<div id="box">
+		<wz-select :list="source" @event="handleEvent"></wz-select>
+		<div class="box2">
+			<div>
+				男士:{{source.manNumber}}
+			</div>
+			<div>
+				女士:{{source.womanNumber}}
+			</div>
+			<div>
+				儿童:{{source.childNumber}}
+			</div>
+		</div>
+		<div class="box3">{{list}}</div>
+	</div>
+	<script type="text/javascript">
+		var bus = new Vue();
+		Vue.component('wzSelect',{
+			data(){
+				return {
+					num:4,
+					manArr:[],
+					womanArr:[],
+					childArr:[],
+					arr:[]
+				}
+			},
+			props:["list"],
+			template:`
+			<div>
+				<div class="box1">
+					<div>男士</div>
+					<div>￥{{list.manPrice}}</div>
+					<div class="select">
+						<button type="button" @click="change(list.man+'0')" :disabled="list.manNumber===0">-</button>
+						{{list.manNumber}}
+						<button type="button" @click="change(list.man+'1')">+</button>
+					</div>
+				</div>
+				<div class="box1">
+					<div>女士</div>
+					<div>￥{{list.womanPrice}}</div>
+					<div class="select">
+						<button type="button" @click="change(list.woman+'0')" :disabled="list.womanNumber===0">-</button>
+						{{list.womanNumber}}
+						<button type="button" @click="change(list.woman+'1')">+</button>
+					</div>
+				</div>
+				<div class="box1">
+					<div>儿童</div>
+					<div>￥{{list.childPrice}}</div>
+					<div class="select">
+						<button type="button" @click="change(list.child+'0')" :disabled="list.childNumber===0">-</button>
+						{{list.childNumber}}
+						<button type="button" @click="change(list.child+'1')">+</button>
+					</div>
+				</div>
+			</div>`,
+			methods:{
+				change(data){
+					var arr,name,num;
+					var zimu = data.substring(0,1); //N | V | E 
+					var count = data.substring(data.length-1); // 1 | 0
+					//判断是加还是减
+					num = this.num
+					console.log(num);
+					if(zimu==='N'){
+						if(count==='1'){
+							this.list.manNumber++
+						}else{
+							this.list.manNumber--
+						}
+						arr = this.manArr;
+						name = this.list.man;
+					}else if(zimu==='V'){
+						if(count==='1'){
+							this.list.womanNumber++
+						}else{
+							this.list.womanNumber--
+						}
+						console.log('V')
+						arr = this.womanArr;
+						name = this.list.woman;
+					}else{
+						if(count==='1'){
+							this.list.childNumber++
+						}else{
+							this.list.childNumber--
+						}
+						console.log('E')
+						arr = this.childArr;
+						name = this.list.child;
+					}
+					
+					select(count,zimu,arr,name,num)
+					function select(count,zimu,arr){
+						if(count==='1'){
+							if(num===10){
+								var Nman = zimu + '4' + num
+								name = Nman;
+								num++;
+								arr.push(Nman);
+							}else{
+								var Nman = zimu + '30' + num
+								name = Nman;
+								num++;
+								arr.push(Nman);
+							}
+							//console.log(arr)
+						}else{
+							num--
+							arr.splice(arr.length-1,1);
+							//console.log(arr)
+						}
+					}
+					this.num = num
+					this.arr = this.manArr +','+this.womanArr+','+this.childArr
+					//console.log(this.arr);
+					arr = this.arr.split(',');
+					
+					// console.log(arr.splice(2,2))
+					var n = 4
+					var newarr = [];
+					for(let i = 0; i < arr.length; i++){
+						//console.log(arr[i]);
+						if(i >= 6 ){
+							newarr[i] = arr[i].substring(0,arr[i].length-2) + n;
+						}else{
+							let tens = arr[i].substring(arr[i].length-2,arr[i].length-1);
+							console.log(tens)
+							if(tens > 0){
+								newarr[i] = arr[i].substring(0,arr[i].length-3) + '30'+n;
+							}else{
+								newarr[i] = arr[i].substring(0,arr[i].length-1) + n;
+							}
+						}
+						n++
+					}
+					// arr = arr.splice(arr.length,1)
+					console.log(newarr);
+					this.$emit('event',newarr);
+				}
+			}
+		})
+		var vm = new Vue({
+			el:'#box',
+			data:{
+				list:'',
+				source:
+					{
+						man:'N304',
+						manPrice:15,
+						manNumber:1,
+						woman:'V304',
+						womanPrice:15,
+						womanNumber:2,
+						child:'E304',
+						childPrice:7,
+						childNumber:3,
+					},
+			},
+			methods:{
+				handleEvent(data){
+					console.log(data);
+					this.list = data
+				}
+			}
+		})
+	</script>
+</body>
+</html>

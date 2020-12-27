@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="vue.js" type="text/javascript" charset="utf-8"></script>
+		<style>
+			#overplay{
+				background: rgba(0,0,0,.6);
+				width: 100%;
+				margin: auto;
+				position: fixed;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+			}
+			#center{
+				background: #fff;
+				border-radius: 5px;
+				width: 290px;
+				height: 160px;
+				margin: auto;
+				position: fixed;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-around;
+				align-items: center;
+			}
+			.select{
+				width: 100%;
+				display: flex;
+				justify-content: space-around;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box">
+			<button type="button" @click="modal()">show</button>
+			<div id="overplay" v-show="isShow" @click.self="isShow=false">
+				<div id="center" >
+					<wz-title></wz-title>
+					<wz-content></wz-content>
+					<wz-button class="select" :myshow="isShow" @myevent="handleChange"></wz-button>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			Vue.component('wzTitle',{
+				template:`
+					<div>标题</div>
+				`
+			})
+			Vue.component('wzContent',{
+				template:`
+					<div>内容</div>
+				`
+			})
+			Vue.component('wzButton',{
+				props:["myshow"],
+				template:`
+					<div>
+						<button type="button" @click="handleClick(!myshow)">取消</button>
+						<button type="button" @click="handleClick(myshow)">确定</button>
+					</div>
+				`,
+				methods:{
+					handleClick(flag){
+						return new Promise((resolve,reject)=>{
+							if (flag) {
+							    //console.log(this.myshow);
+							    resolve(flag);
+							}else {
+							    //console.log(this.myshow);
+							    reject(flag);
+							}
+						})
+						.then((val)=>{
+							console.log(val);
+							this.$emit('myevent',val)
+						})
+					}
+				}
+			})
+			var vm = new Vue({
+				el:'#box',
+				data:{
+					isShow:false
+				},
+				methods:{
+					modal(){
+						this.isShow = !this.isShow;
+					},
+					handleChange(data){
+						console.log(data);
+						this.isShow = data 
+					}
+				}
+			})
+		</script>
+	</body>
+</html>
